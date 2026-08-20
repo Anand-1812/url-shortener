@@ -1,12 +1,30 @@
 const Home = () => {
   return (
-    <div className="min-h-screen w-full bg-neutral-950 text-white flex flex-col items-center p-4 overflow hidden">
-      <h1 className="text-4xl font-bold text-center mt-10">
+    <div className="min-h-screen w-full bg-neutral-50 flex flex-col items-center px-4">
+      <h1 className="text-3xl sm:text-5xl font-bold text-center mt-16 text-neutral-900">
         URL Shortener
       </h1>
 
-      <div className="w-full max-w-md mt-16 p-6 rounded-xl shadow-lg border border-gray-200">
-        {/* Form goes here */}
+      <div className="w-full max-w-2xl mt-8 sm:mt-12 p-5 sm:p-8 bg-white rounded-2xl shadow-xl border border-neutral-200">
+        <h2 className="text-xl font-semibold text-center text-neutral-800">
+          Paste the URL to be shortened
+        </h2>
+
+        <div className="mt-6 flex flex-col sm:flex-row gap-3">
+          <input
+            type="url"
+            placeholder="https://example.com/very-long-url"
+            className="w-full flex-1 px-5 py-4 text-neutral-700 border border-neutral-300 rounded-xl outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all"
+          />
+
+          <button className="w-full sm:w-auto px-6 py-4 bg-neutral-900 text-white font-medium rounded-xl hover:bg-neutral-800 transition-colors cursor-pointer">
+            Shorten URL
+          </button>
+        </div>
+
+        <p className="mt-4 text-sm text-neutral-400 text-center">
+          Your shortened URL will appear here.
+        </p>
       </div>
     </div>
   );
