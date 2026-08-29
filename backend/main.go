@@ -1,15 +1,16 @@
 package main
 
-import ( 
-	"http"
+import (
 	"fmt"
+	"log"
+	"net/http"
 )
 
-const PORT = ":8080"
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "I love %s!", r.URL.Path[1:])
+}
 
-func main()  {	
-	serveErr := http.ListenAndServe(PORT, nil)
-	if serveErr != nil {
-		fmt.Println("server error: %v", error)
-	}
+func main() {
+	http.HandleFunc("/", handler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
