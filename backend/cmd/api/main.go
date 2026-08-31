@@ -1,3 +1,4 @@
+// Package main for starting the backend server
 package main
 
 import (
@@ -6,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"backend/db"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
@@ -22,20 +25,30 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	_ = godotenv.Load()
+	ctx := context.Background()
 
 	dbConnString := os.Getenv("NEON_DB_STRING")
 	if dbConnString == "" {
 		log.Fatal("DB env is required")
 	}
 
-	pool, err := pgxpool.New(context.Background(), dbConnString)
+	pool, err := db.ConnectDB(ctx, dbConnString)
 	if err != nil {
-		log.Fatal("Error connecting to db")
+		log.Fatalf("Unable to connect with databse: %v\n", err)
 	}
 	defer pool.Close()
 
-	fmt.Println("Connection established")
+	if err := pool.Ping(ctx); err != nil {
+		log.Fatalf("Database ping failed: %v\n", err)
+	}
 
+	fmt.Println("DB Connection established")
+
+	if err := db.InitSchema(ctx, pool); err != nil {
+		log.Fatalf("DB initialization failed: %v", err)
+	}
+
+	// ------ server ------
 	server := &Server{db: pool}
 
 	http.HandleFunc("/", server.handler)
