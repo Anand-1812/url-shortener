@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"backend/db"
+	"backend/internal/db"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
