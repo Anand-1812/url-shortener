@@ -9,19 +9,12 @@ import (
 	"os"
 
 	"backend/internal/db"
+	"backend/internal/handler"
+	"backend/internal/repository"
+	"backend/internal/service"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
-
-type Server struct {
-	db *pgxpool.Pool
-}
-
-// method for the handler
-func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "This is from %s", r.URL.Path[1:])
-}
 
 func main() {
 	_ = godotenv.Load()
@@ -48,10 +41,22 @@ func main() {
 		log.Fatalf("DB initialization failed: %v", err)
 	}
 
-	// ------ server ------
-	server := &Server{db: pool}
+	// layers
+	repository := repository.NewURLRepository(pool)
+	service := service.NewURLService(repository)
+	handler := handler.NewURLHandler(service)
 
-	http.HandleFunc("/", server.handler)
+	// routes
+	mux := http.NewServeMux()
+	mux.HandleFunc("POST /shorten", handler.Shorten)
+	mux.HandleFunc("GET /{code}", handler.Redirect)
+
+	// ------ server ------
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
 	log.Println("server running on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":"+port, mux))
 }

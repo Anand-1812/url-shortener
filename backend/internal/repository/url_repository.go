@@ -11,6 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+var ErrNotFound = errors.New("url record not found")
+
 type URLRecords struct {
 	ID          int64     `json:"id"`
 	OriginalURL string    `json:"original_url"`
@@ -69,7 +71,7 @@ func (r *URLRepository) FindAndIncrementsClicks(ctx context.Context, shortCode s
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return URLRecords{}, fmt.Errorf("repository: database error: %w", err)
+			return URLRecords{}, ErrNotFound
 		}
 		return URLRecords{}, fmt.Errorf("repository: failed to fetch url: %w", err)
 	}
