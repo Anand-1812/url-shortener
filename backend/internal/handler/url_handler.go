@@ -48,7 +48,7 @@ func (h *URLHandler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 
 func (h *URLHandler) Shorten(w http.ResponseWriter, r *http.Request) {
 	var req ShortenURL
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.URL != "" {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.URL == "" {
 		http.Error(w, `{"error": "invalid body or missing url"}`, http.StatusBadRequest)
 		return
 	}
