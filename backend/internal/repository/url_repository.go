@@ -3,9 +3,11 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -66,6 +68,9 @@ func (r *URLRepository) FindAndIncrementsClicks(ctx context.Context, shortCode s
 		&records.CreatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return URLRecords{}, fmt.Errorf("repository: database error: %w", err)
+		}
 		return URLRecords{}, fmt.Errorf("repository: failed to fetch url: %w", err)
 	}
 
