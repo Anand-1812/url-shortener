@@ -21,6 +21,10 @@ func NewURLService(repo *repository.URLRepository) *URLService {
 	return &URLService{repo: repo}
 }
 
+func (s *URLService) Ping(ctx context.Context) error {
+	return s.repo.Ping(ctx)
+}
+
 func (s *URLService) generateCode(length int) (string, error) {
 	code := make([]byte, length)
 	for i := range code {

@@ -2,10 +2,11 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
+	"time"
 
 	"backend/internal/repository"
 	"backend/internal/service"
@@ -30,8 +31,19 @@ type ShortenURLResponce struct {
 }
 
 func (h *URLHandler) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+	defer cancel()
+
+	if err := h.service.Ping(ctx); err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"status": "unhealthy", "databse": "disconnected"}`))
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "server is running")
+	w.Write([]byte(`{"status": "healthy", "databse": "connected"}`))
 }
 
 func (h *URLHandler) Shorten(w http.ResponseWriter, r *http.Request) {

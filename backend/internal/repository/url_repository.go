@@ -31,6 +31,10 @@ func NewURLRepository(pool *pgxpool.Pool) *URLRepository {
 	}
 }
 
+func (r *URLRepository) Ping(ctx context.Context) error {
+	return r.pool.Ping(ctx)
+}
+
 func (r *URLRepository) Create(ctx context.Context, originalURL, shortCode string) (URLRecords, error) {
 	query := `
 		INSERT INTO urls (original_url, short_url)
