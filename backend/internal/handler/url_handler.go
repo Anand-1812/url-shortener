@@ -4,6 +4,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"backend/internal/repository"
@@ -26,6 +27,11 @@ type ShortenURLResponce struct {
 	ShortCode   string `json:"short_code"`
 	ShortURL    string `json:"short_url"`
 	OriginalURL string `json:"original_url"`
+}
+
+func (h *URLHandler) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "server is running")
 }
 
 func (h *URLHandler) Shorten(w http.ResponseWriter, r *http.Request) {

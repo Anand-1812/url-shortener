@@ -48,6 +48,7 @@ func main() {
 
 	// routes
 	mux := http.NewServeMux()
+	mux := http.HandleFunc("GET /healthcheck", h.HealthCheck)
 	mux.HandleFunc("POST /shorten", handler.Shorten)
 	mux.HandleFunc("GET /{code}", handler.Redirect)
 
