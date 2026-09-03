@@ -45,12 +45,7 @@ func (s *URLService) Shorten(ctx context.Context, rawURL string) (repository.URL
 		return repository.URLRecords{}, fmt.Errorf("invalid url: must include http:// or https://")
 	}
 
-	shortCode, err := s.generateCode(6)
-	if err != nil {
-		return repository.URLRecords{}, err
-	}
-
-	return s.repo.Create(ctx, rawURL, shortCode)
+	return s.repo.CreateWithBase62(ctx, rawURL, Encode)
 }
 
 func (s *URLService) Resolve(ctx context.Context, shortCode string) (repository.URLRecords, error) {
