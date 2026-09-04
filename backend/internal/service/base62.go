@@ -20,7 +20,7 @@ func Encode(num int64) string {
 	}
 
 	runes := []byte(sb.String())
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j+1 {
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 		runes[i], runes[j] = runes[j], runes[i]
 	}
 

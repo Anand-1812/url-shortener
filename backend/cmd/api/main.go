@@ -19,7 +19,7 @@ import (
 func enableCors(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 		if r.Method == http.MethodOptions {
@@ -32,7 +32,11 @@ func enableCors(next http.Handler) http.Handler {
 }
 
 func main() {
-	_ = godotenv.Load()
+	for _, envFile := range []string{".env", "backend/.env", "../../.env"} {
+		if err := godotenv.Load(envFile); err == nil {
+			break
+		}
+	}
 	ctx := context.Background()
 
 	dbConnString := os.Getenv("NEON_DB_STRING")

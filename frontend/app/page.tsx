@@ -1,4 +1,4 @@
-import Card from "../components/Card/Card.tsx"
+import Card from "../components/Card/Card";
 
 const Home = () => {
   return (
@@ -8,7 +8,6 @@ const Home = () => {
       </h1>
 
       <Card />
-
     </div>
   );
 };
