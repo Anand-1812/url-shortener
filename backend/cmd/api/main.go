@@ -63,7 +63,7 @@ func main() {
 	// layers
 	repository := repository.NewURLRepository(pool)
 	service := service.NewURLService(repository)
-	handler := handler.NewURLHandler(service)
+	handler := handler.NewURLHandler(service, os.Getenv("PUBLIC_BASE_URL"))
 
 	// routes
 	mux := http.NewServeMux()

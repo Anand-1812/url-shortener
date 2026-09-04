@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"backend/internal/repository"
@@ -13,11 +14,15 @@ import (
 )
 
 type URLHandler struct {
-	service *service.URLService
+	service       *service.URLService
+	publicBaseURL string
 }
 
-func NewURLHandler(service *service.URLService) *URLHandler {
-	return &URLHandler{service: service}
+func NewURLHandler(service *service.URLService, publicBaseURL string) *URLHandler {
+	return &URLHandler{
+		service:       service,
+		publicBaseURL: strings.TrimRight(publicBaseURL, "/"),
+	}
 }
 
 type ShortenURL struct {
@@ -63,9 +68,21 @@ func (h *URLHandler) Shorten(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(ShortenURLResponce{
 		ShortCode:   record.ShortURL,
-		ShortURL:    "http://" + r.Host + "/" + record.ShortURL,
+		ShortURL:    h.shortURLBase(r) + "/" + record.ShortURL,
 		OriginalURL: record.OriginalURL,
 	})
+}
+
+func (h *URLHandler) shortURLBase(r *http.Request) string {
+	if h.publicBaseURL != "" {
+		return h.publicBaseURL
+	}
+
+	scheme := r.Header.Get("X-Forwarded-Proto")
+	if scheme == "" {
+		scheme = "http"
+	}
+	return scheme + "://" + r.Host
 }
 
 func (h URLHandler) Redirect(w http.ResponseWriter, r *http.Request) {
