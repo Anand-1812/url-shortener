@@ -10,6 +10,7 @@ import (
 
 	"backend/internal/db"
 	"backend/internal/handler"
+	"backend/internal/middleware"
 	"backend/internal/repository"
 	"backend/internal/service"
 
@@ -67,8 +68,8 @@ func main() {
 
 	// routes
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthcheck", handler.HealthCheck)
-	mux.HandleFunc("POST /shorten", handler.Shorten)
+	mux.Handle("GET /healthcheck", middleware.RateLimit(http.HandlerFunc(handler.HealthCheck), 5, 10))
+	mux.Handle("POST /shorten", middleware.RateLimit(http.HandlerFunc(handler.Shorten), 5, 19))
 	mux.HandleFunc("GET /{code}", handler.Redirect)
 
 	// ------ server ------
@@ -77,6 +78,5 @@ func main() {
 		port = "8080"
 	}
 
-	log.Println("server running on :8080")
 	log.Fatal(http.ListenAndServe(":"+port, enableCors(mux)))
 }
